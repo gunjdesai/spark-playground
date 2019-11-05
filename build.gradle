@@ -1,0 +1,52 @@
+apply plugin: "scala"
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "application"
+
+def scalaMajorRelease = '2.11'
+def scalaMinorRelease = '8'
+def scalaVersion = scalaMajorRelease + '.' + scalaMinorRelease
+def sparkMajorRelease = "2.3.0"
+def sparkMinorRelease = "cloudera2"
+def sparkVersion = sparkMajorRelease + '.' + sparkMinorRelease
+
+buildscript {
+
+    def shadowJarVersion = '2.0.4'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:$shadowJarVersion"
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'http://packages.confluent.io/maven' }
+    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos/" }
+}
+
+dependencies {
+    compile "org.scala-lang:scala-library:$scalaVersion"
+    compile "org.apache.spark:spark-core_$scalaMajorRelease:$sparkVersion"
+    compile "org.apache.spark:spark-sql_$scalaMajorRelease:$sparkVersion"
+    compile "org.apache.spark:spark-sql-kafka-0-10_$scalaMajorRelease:$sparkVersion"
+    compile group: "com.github.scopt", name: "scopt_$scalaMajorRelease",version: "3.7.0"
+
+}
+
+mainClassName = "Start.scala"
+
+shadowJar {
+    baseName = 'spark-playground'
+    mainClassName = 'Start.scala'
+    classifier = null
+    zip64 = true
+    description = "A pet project to play around with datasets in Spark"
+}
+
+
